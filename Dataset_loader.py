@@ -27,6 +27,7 @@ class AslDataLoader(Dataset):
     def __getitem__(self, idx):
         if(self.train == True):
             img_path = os.path.join("data/data_detect/train", self.imgs.loc[idx]['img_name'])
+            print("Training data  loaded")
         else:
             img_path = os.path.join("data/data_detect/test", self.imgs.loc[idx]['img_name'])
 

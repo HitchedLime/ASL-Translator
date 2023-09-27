@@ -13,8 +13,9 @@ import torchvision.transforms.functional as F
 
 class AslDataLoader(Dataset):
 
-    def __init__(self, root: str, transforms=None):
+    def __init__(self, root: str, transforms=None,train =True):
         self.root = root
+        self.train =train
         self.transforms = transforms
         self.imgs = pd.read_csv(root)
        # self.imgs['label']= self.imgs['label'].apply(lambda x: x.lower() if isinstance(x, str) else x)
@@ -24,7 +25,10 @@ class AslDataLoader(Dataset):
 
 
     def __getitem__(self, idx):
-        img_path = os.path.join("data/data_detect/train", self.imgs.loc[idx]['img_name'])
+        if(self.train == True):
+            img_path = os.path.join("data/data_detect/train", self.imgs.loc[idx]['img_name'])
+        else:
+            img_path = os.path.join("data/data_detect/test", self.imgs.loc[idx]['img_name'])
 
         img = read_image(img_path)
         resize= torchvision.transforms.Resize(( 370, 370))

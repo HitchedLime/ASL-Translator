@@ -17,6 +17,11 @@ class AslDataLoader(Dataset):
         self.root = root
         self.transforms = transforms
         self.imgs = pd.read_csv(root)
+       # self.imgs['label']= self.imgs['label'].apply(lambda x: x.lower() if isinstance(x, str) else x)
+        alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        char_to_int = dict((c, i) for i, c in enumerate(alphabet))
+        self.imgs['label'] = self.imgs['label'].apply(lambda x: char_to_int[x])
+
 
     def __getitem__(self, idx):
         img_path = os.path.join("data/data_detect/train", self.imgs.loc[idx]['img_name'])
@@ -31,7 +36,7 @@ class AslDataLoader(Dataset):
         #image_id = idx
         target = {}
         target["boxes"]=torch.reshape(boxes,(1,4))
-        target["labels"]=labels
+        target["labels"]=torch.LongTensor(labels)
 
 
 

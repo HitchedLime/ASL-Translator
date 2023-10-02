@@ -38,10 +38,11 @@ class AslDataLoader(Dataset):
         boxes = torch.DoubleTensor([self.imgs.loc[idx]['x1'], self.imgs.loc[idx]['y1'], self.imgs.loc[idx]['x2'], self.imgs.loc[idx]['y2']])
         # print(boxes)
         labels = [self.imgs.loc[idx]['label']]
-        #image_id = idx
+        image_id = idx
         target = {}
         target["boxes"]=torch.reshape(boxes,(1,4))
         target["labels"]=torch.LongTensor(labels)
+        target['image_id']=image_id
 
 
 

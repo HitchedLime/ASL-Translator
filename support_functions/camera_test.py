@@ -6,6 +6,36 @@ import torchvision.transforms as T
 import torchvision.utils as V
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 
+
+import cv2
+import torch
+
+def draw_bounding_boxes(image, predictions, color=(0, 255, 0), thickness=2):
+    """
+    Draw bounding boxes on an image.
+
+    Parameters:
+    - image: The image on which to draw the bounding boxes.
+    - predictions: A dictionary containing the bounding boxes, labels, and scores.
+    - color: The color of the bounding boxes. Default is green (0, 255, 0).
+    - thickness: The thickness of the bounding box lines. Default is 2.
+    """
+
+    # Convert the bounding boxes to a list of tuples
+    bounding_boxes = predictions[0]['boxes']
+    scores=  predictions[0]['scores']
+    labels = predictions[0]['labels']
+    for box in bounding_boxes:
+        x1, y1, x2, y2 = map(int, box)
+        cv2.rectangle(image, (x1, y1), (x2, y2), color, thickness)
+
+    return image
+
+
+
+
+
+
 model_path ="model.pt"
 
 device = torch.device('cpu')
@@ -41,17 +71,21 @@ transform = T.Compose([
 # Start the main loop.
 while True:
 
-    # Get a frame from the camera.
+
     ret, frame = cap.read()
 
     # If the frame is not empty, preprocess it and pass it to the model.
     if ret:
-        frame = cv2.resize(frame, (224, 224))
+        #frame = cv2.resize(frame, (224, 224))
         frame_tensor = transform(frame)
         frame_tensor = frame_tensor.unsqueeze(0)
 
-        # Pass the frame tensor to the model.
-        prediction = model(frame_tensor)
 
+        prediction = model(frame_tensor)
+        frame = draw_bounding_boxes(frame,prediction)
+        cv2.imshow('Camera Feed', frame)
         # Do something with the prediction.
         print(prediction)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
